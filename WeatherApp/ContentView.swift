@@ -15,7 +15,7 @@ struct ContentView: View {
         ZStack {
             
             // Background color
-            BackgroundView(isNight: $isNight)
+            BackgroundView(isNight: isNight)
             
             VStack() {
                 CityTextView(cityName: "Cupertino, CA")
@@ -24,28 +24,10 @@ struct ContentView: View {
                                 temparature: isNight ? 50 : 76)
                 
                 HStack(spacing: 25) {
-                    
-                    WeatherDayView(dayOfWeek: "TUE",
-                                   imageName: "cloud.sun.fill",
-                                   temparature: 74)
-                    
-                    WeatherDayView(dayOfWeek: "WED",
-                                   imageName: "sun.max.fill",
-                                   temparature: 88)
-                    
-                    WeatherDayView(dayOfWeek: "THU",
-                                   imageName: "wind.snow",
-                                   temparature: 55)
-                    
-                    WeatherDayView(dayOfWeek: "FRI",
-                                   imageName: "sunset.fill",
-                                   temparature: 60)
-                    
-                    WeatherDayView(dayOfWeek: "SAT",
-                                   imageName: "snow",
-                                   temparature: 25)
+                    WeatherDayView()
                 }
                 Spacer()
+                
                 Button {
                     isNight.toggle()
                 } label: {
@@ -65,40 +47,45 @@ struct ContentView: View {
 
 struct WeatherDayView: View {
     
-    var dayOfWeek: String
-    var imageName: String
-    var temparature: Int
+    let weatherData : [WeatherModel] = [
+        WeatherModel(dayOfWeek: "TUE", temparature: 74),
+        WeatherModel(dayOfWeek: "WED", temparature: 88),
+        WeatherModel(dayOfWeek: "THU", temparature: 55),
+        WeatherModel(dayOfWeek: "FRI", temparature: 60),
+        WeatherModel(dayOfWeek: "SAT", temparature: 25)
+    ]
+    
     
     var body: some View {
         
-        VStack() {
-            Text(dayOfWeek)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.white)
-            
-            Image(systemName: imageName)
-                .renderingMode(.original)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 40, height: 40)
-            
-            Text("\(temparature)°")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundStyle(.white)
+        ForEach(weatherData) { weather in
+            VStack() {
+                Text(weather.dayOfWeek)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.white)
+                
+                Image(systemName: weather.imageName)
+                    .renderingMode(.original)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                
+                Text("\(weather.temparature)°")
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundStyle(.white)
+            }
         }
     }
 }
 
 struct BackgroundView: View {
     
-    @Binding var isNight: Bool
+    var isNight: Bool
     
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: [isNight ? .black : .blue,
-                                                   isNight ? .gray : .lightBlue]),
-                       startPoint: .topLeading,
-                       endPoint: .bottomTrailing)
-        .ignoresSafeArea(edges: .all)
+        ContainerRelativeShape()
+            .fill(isNight ? Color.black.gradient : Color.blue.gradient)
+            .ignoresSafeArea()
     }
 }
 
